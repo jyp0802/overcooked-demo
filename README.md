@@ -17,11 +17,25 @@ conda create -n oc_demo python=3.7 -y
 conda activate oc_demo
 ```
 
-Run the install script
+### Install script
+
+* Copies all files from the beginning.
+* This will create a folder called `app/`.
+* Run this again if you changed something in the `static` folder.
 ```
-. install_local.sh
+./install_local.sh
 ```
-This will create a folder called `app/`
+### Build script
+
+* Runs `pip install` on the `human_aware_rl` and `overcooked_ai` repositories.
+* Run this again if you changed these folders.
+```
+./build_local.sh
+```
+### Run script
+```
+./run_local.sh
+```
 
 ## Usage
 Run the server
