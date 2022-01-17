@@ -38,13 +38,13 @@ In order to kill the production server, run
 
 ## Dependencies
 
-The Overcooked-Demo server relies on the [human-aware-rl](https://github.com/jyp0802/human_aware_rl) repo. The `overcooked_ai' contains the game logic and the `human_aware_rl' contains the rl training code required for managing agents. The repo is automatically cloned and installed in the Docker builds.
+The Overcooked-Demo server relies on both the [overcooked-ai](https://github.com/jyp0802/overcooked_ai) and [human-aware-rl](https://github.com/jyp0802/human_aware_rl) repos. The former contains the game logic, the latter contains the rl training code required for managing agents. Both repos are automatically cloned and installed in the Docker builds.
 
-The branch of `human_aware_rl` imported in the development and production servers can be specified by the `HARL_BRANCH` environment variable. For example, to use the branch `foo` from `human_aware_rl`, run
+The branch of `overcooked_ai` and `human_aware_rl` imported in both the development and production servers can be specified by the `OVERCOOKED_BRANCH` and `HARL_BRANCH` environment variables, respectively. For example, to use the branch `foo` from `overcooked-ai` and branch `bar` from `human_aware_rl`, run
 ```bash
-HARL_BRANCH=bar ./up.sh
+OVERCOOKED_BRANCH=foo HARL_BRANCH=bar ./up.sh
 ```
-The default branch for the repo is currently `master`.
+The default branches for `overcooked_ai` and `human_aware_rl` are `modularize` and `master`, respectively.
 
 ## Using Pre-trained Agents
 
