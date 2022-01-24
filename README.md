@@ -43,6 +43,7 @@ Run the server
 (in the app/ folder)
 python -u app
 ```
+After running one of the above command, navigate to http://0.0.0.0:5000
 
 # Docker
 
