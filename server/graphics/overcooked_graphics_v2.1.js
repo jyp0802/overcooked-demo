@@ -278,14 +278,14 @@ class OvercookedScene extends Phaser.Scene {
 
                 // show time accordingly
                 let show_time = true;
-                if (obj._cooking_tick > obj.cook_time && !this.show_post_cook_time || obj._cooking_tick == -1) {
+                if (obj.cooking_tick > obj.cook_time && !this.show_post_cook_time || obj.cooking_tick == -1) {
                     show_time = false;
                 }
                 if (show_time) {
                     let timesprite =  this.add.text(
                         this.tileSize*(x+.5),
                         this.tileSize*(y+.6),
-                        String(obj._cooking_tick),
+                        String(obj.cooking_tick),
                         {
                             font: "25px Arial",
                             fill: "red",

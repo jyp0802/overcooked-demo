@@ -563,5 +563,7 @@ if __name__ == '__main__':
     # Attach exit handler to ensure graceful shutdown
     atexit.register(on_exit)
 
+    print("http://0.0.0.0:5000")
+
     # https://localhost:80 is external facing address regardless of build environment
     socketio.run(app, host=host, port=port, log_output=app.config['DEBUG'])

@@ -68,7 +68,7 @@ var tutorial_hints = () => [
     <p>You cannot remove ingredients from the pot. You can, however, cook any soup you like, even if it's not in <b>All Orders</b>...</p>
     `,
     `
-    <p>Each onion is worth ${config['onion_value']} points and each tomato is worth ${config['tomato_value']} points<p>
+    <p>Each onion is worth ${config['onion_ingr_value']} points and each tomato is worth ${config['tomato_ingr_value']} points<p>
     `,
     `
     <p>The bonus order here is <b>1 onion 2 tomatoes<b>. This could be determined by referring to the soup legend </p>
