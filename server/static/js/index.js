@@ -219,6 +219,10 @@ function enable_key_listener() {
                 action = 'SPACE';
                 break;
 
+            case 90: //z
+                action = 'Z';
+                break;
+
             default: // exit this handler for other keys
                 return; 
         }

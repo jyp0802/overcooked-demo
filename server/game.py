@@ -400,7 +400,8 @@ class OvercookedGame(Game):
             "DOWN" : Direction.SOUTH,
             "LEFT" : Direction.WEST,
             "RIGHT" : Direction.EAST,
-            "SPACE" : Action.INTERACT
+            "SPACE" : Action.INTERACT,
+            "Z" : Action.ACTIVATE
         }
         self.ticks_per_ai_action = 4
         self.curr_tick = 0
@@ -746,7 +747,7 @@ class DummyAI():
     Randomly samples actions. Used for debugging
     """
     def action(self, state):
-        [action] = random.sample([Action.STAY, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Action.INTERACT], 1)
+        [action] = random.sample([Action.STAY, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Action.INTERACT, Action.ACTIVATE], 1)
         return action, None
 
     def reset(self):
