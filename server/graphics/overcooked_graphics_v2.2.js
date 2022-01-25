@@ -108,8 +108,8 @@ class OvercookedScene extends Phaser.Scene {
 
     preload() {
         this.load.atlas("tiles",
-            this.assets_loc + "terrain__.png",
-            this.assets_loc + "terrain__.json");
+            this.assets_loc + "terrain_2.png",
+            this.assets_loc + "terrain_2.json");
         this.load.atlas("chefs",
             this.assets_loc + "chefs.png",
             this.assets_loc + "chefs.json");
@@ -145,10 +145,10 @@ class OvercookedScene extends Phaser.Scene {
         let terrain_to_img = {
             ' ': 'floor.png',
             'X': 'counter.png',
-            'S': 'stove3.png',
-            'O': 'onion_dispensor2.png',
-            'T': 'tomato_dispensor2.png',
-            'D': 'dishes_2.png',
+            'S': 'stove.png',
+            'O': 'onions.png',
+            'T': 'tomato_dispensor.png',
+            'D': 'dish_dispensor.png',
             '_': 'serve.png'
         };
         let pos_dict = this.terrain;

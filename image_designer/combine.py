@@ -8,8 +8,8 @@ out_dir = "assets"
 
 image_dict = {"frames": {}}
 
-image_width = 120
-image_height = 120
+image_width = 256
+image_height = 256
 border_width = 1
 background_color = (255,255,255,0)
 
