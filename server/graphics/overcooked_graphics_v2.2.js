@@ -131,9 +131,9 @@ class OvercookedScene extends Phaser.Scene {
         this.load.multiatlas("soups",
             this.assets_loc + "soups.json",
             this.assets_loc)
-        this.load.atlas("ingredient_container",
-            this.assets_loc + "ingredient_containers.png",
-            this.assets_loc + "ingredient_containers.json")
+        this.load.atlas("ingredients_containers",
+            this.assets_loc + "ingredients_containers.png",
+            this.assets_loc + "ingredients_containers_.json")
         this.load.atlas("my_config",
             "./static/js/my_config.json")
     }
@@ -293,7 +293,7 @@ class OvercookedScene extends Phaser.Scene {
                 let objsprite = this.add.sprite(
                     this.tileSize*x,
                     this.tileSize*y,
-                    "ingredient_container",
+                    "ingredients_containers",
                     spriteframe
                 );
                 objsprite.setDisplaySize(this.tileSize, this.tileSize);
