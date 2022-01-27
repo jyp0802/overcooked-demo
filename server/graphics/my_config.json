@@ -1,0 +1,4 @@
+{
+    "containers": ["pot", "dish"],
+    "deliverable_containers": ["dish"]
+}

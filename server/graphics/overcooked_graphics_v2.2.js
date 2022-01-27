@@ -4,6 +4,12 @@ Added state potential to HUD
 
 */
 
+// import fs from 'fs'
+// import YAML from 'yaml'
+
+// const jsonData = require('../graphics/my_config.json');
+// console.log("jsonData",jsonData);
+
 
 
 // How long a graphics update should take in milliseconds
@@ -35,10 +41,16 @@ var game_config = {
     }
 };
 
+var my_config = {
+    "containers" : ["pot", "dish"],
+    "deliverable_containers" : ["dish"]
+}
+
 var graphics;
 
 // Invoked at every state_pong event from server
 function drawState(state) {
+
     // Try catch necessary because state pongs can arrive before graphics manager has finished initializing
     try {
         graphics.set_state(state);
@@ -108,8 +120,8 @@ class OvercookedScene extends Phaser.Scene {
 
     preload() {
         this.load.atlas("tiles",
-            this.assets_loc + "terrain_2.png",
-            this.assets_loc + "terrain_2.json");
+            this.assets_loc + "terrain_3.png",
+            this.assets_loc + "terrain_3.json");
         this.load.atlas("chefs",
             this.assets_loc + "chefs.png",
             this.assets_loc + "chefs.json");
@@ -119,6 +131,11 @@ class OvercookedScene extends Phaser.Scene {
         this.load.multiatlas("soups",
             this.assets_loc + "soups.json",
             this.assets_loc)
+        this.load.atlas("ingredient_container",
+            this.assets_loc + "ingredient_containers.png",
+            this.assets_loc + "ingredient_containers.json")
+        this.load.atlas("my_config",
+            "./static/js/my_config.json")
     }
 
     create() {
@@ -146,10 +163,11 @@ class OvercookedScene extends Phaser.Scene {
             ' ': 'floor.png',
             'X': 'counter.png',
             'S': 'stove.png',
-            'O': 'onions.png',
+            'O': 'onion_dispensor.png',
             'T': 'tomato_dispensor.png',
             'D': 'dish_dispensor.png',
-            '_': 'serve.png'
+            '_': 'serve.png',
+            'B': 'trash.png'
         };
         let pos_dict = this.terrain;
         for (let row in pos_dict) {
@@ -169,8 +187,10 @@ class OvercookedScene extends Phaser.Scene {
         }
     }
     _drawState (state, sprites) {
-        sprites = typeof(sprites) === 'undefined' ? {} : sprites;
 
+        console.log("sprites",sprites);
+        sprites = typeof(sprites) === 'undefined' ? {} : sprites;
+        console.log("config container: ", my_config.containers);
         //draw chefs
         sprites['chefs'] =
             typeof(sprites['chefs']) === 'undefined' ? {} : sprites['chefs'];
@@ -180,7 +200,7 @@ class OvercookedScene extends Phaser.Scene {
             let dir = DIRECTION_TO_NAME[chef.orientation];
             let held_obj = chef.held_object;
             if (typeof(held_obj) !== 'undefined' && held_obj !== null) {
-                if (held_obj.name === 'soup') {
+                if (held_obj.name === 'pot') {
                     let ingredients = held_obj._ingredients.map(x => x['name']);
                     if (ingredients.includes('onion')) {
                         held_obj = "-soup-onion";
@@ -247,29 +267,33 @@ class OvercookedScene extends Phaser.Scene {
             }
         }
         sprites['objects'] = {};
+        // console.log("dfdfdfdf");
+        console.log("state: ", state);
+        // console.log("ingredients_name: ", state.objects[0].ingredient_names);
+        // console.log("tytpe1: ", typeof(state.objects[0]));
+        // console.log("tytpe2: ", typeof(state.objects[1]));
 
+
+        // 그러니까 ... object가 pot이고 내가 내려놓으려고 한다면 ~~~ 인데 .. 
+        // pot dish 도마 등등 
         for (let objpos in state.objects) {
+            
             if (!state.objects.hasOwnProperty(objpos)) { continue }
             let obj = state.objects[objpos];
             let [x, y] = obj.position;
             let terrain_type = this.terrain[y][x];
             let spriteframe;
-            let soup_status;
-            if ((obj.name === 'soup') && (terrain_type === 'P')) {
-                let ingredients = obj._ingredients.map(x => x['name']);
-
-                // select pot sprite
-                if (!obj.is_ready) {
-                    soup_status = "idle";
-                }
-                else {
-                    soup_status = "cooked";
-                }
-                spriteframe = this._ingredientsToSpriteFrame(ingredients, soup_status);
+            
+            console.log("object: ", obj.name);
+            console.log("terrain_type: ", terrain_type);
+            
+            if (my_config.containers.includes(obj.name)) {
+                spriteframe = this._ingredientsToPNG(obj.name, obj.ingredient_names);
+                console.log("sprite_frame!!",spriteframe);
                 let objsprite = this.add.sprite(
                     this.tileSize*x,
                     this.tileSize*y,
-                    "soups",
+                    "ingredient_container",
                     spriteframe
                 );
                 objsprite.setDisplaySize(this.tileSize, this.tileSize);
@@ -299,7 +323,102 @@ class OvercookedScene extends Phaser.Scene {
 
                 sprites['objects'][objpos] = objs_here
             }
-            else if (obj.name === 'soup') {
+            // else if (obj.name === 'pot') {
+            //     let ingredients = obj._ingredients.map(x => x['name']);
+            //     let soup_status = "done";
+            //     spriteframe = this._ingredientsToSpriteFrame(ingredients, soup_status);
+            //     let objsprite = this.add.sprite(
+            //         this.tileSize*x,
+            //         this.tileSize*y,
+            //         "soups",
+            //         spriteframe
+            //     );
+            //     objsprite.setDisplaySize(this.tileSize, this.tileSize);
+            //     objsprite.depth = 1;
+            //     objsprite.setOrigin(0);
+            //     sprites['objects'][objpos] = {objsprite};
+            // }
+            else {
+                if (obj.name === 'onion') {
+                    spriteframe = "onion.png";
+                }
+                else if (obj.name === 'tomato') {
+                    spriteframe = "tomato.png";
+                }
+                else if (obj.name === 'dish') {
+                    spriteframe = "dish.png";
+                }
+                let objsprite = this.add.sprite(
+                    this.tileSize*x,
+                    this.tileSize*y,
+                    "objects",
+                    spriteframe
+                );
+                objsprite.setDisplaySize(this.tileSize, this.tileSize);
+                objsprite.depth = 1;
+                objsprite.setOrigin(0);
+                sprites['objects'][objpos] = {objsprite};
+            }
+                
+        }        
+        /*
+        for (let objpos in state.objects) {
+            console.log("objpos: ", objpos);
+            if (!state.objects.hasOwnProperty(objpos)) { continue }
+            let obj = state.objects[objpos];
+            console.log("objpos: ", objpos);
+            let [x, y] = obj.position;
+            let terrain_type = this.terrain[y][x];
+            let spriteframe;
+            let soup_status;
+            console.log("object: ", obj.name);
+            console.log("terrain_type: ", terrain_type);
+            if ((obj.name === 'pot') && (terrain_type === 'X')) {
+                let ingredients = obj._ingredients.map(x => x['name']);
+
+                // select pot sprite
+                if (!obj.is_ready) {
+                    soup_status = "idle";
+                }
+                else {
+                    soup_status = "cooked";
+                }
+                spriteframe = this._ingredientsToSpriteFrame(ingredients, soup_status);
+                console.log("spriteframe: ", spriteframe);
+                let objsprite = this.add.sprite(
+                    this.tileSize*x,
+                    this.tileSize*y,
+                    "ingredient_pot",
+                    spriteframe
+                );
+                objsprite.setDisplaySize(this.tileSize, this.tileSize);
+                objsprite.depth = 1;
+                objsprite.setOrigin(0);
+                let objs_here = {objsprite};
+
+                // show time accordingly
+                let show_time = true;
+                if (obj.cooking_tick > obj.cook_time && !this.show_post_cook_time || obj.cooking_tick == -1) {
+                    show_time = false;
+                }
+                if (show_time) {
+                    let timesprite =  this.add.text(
+                        this.tileSize*(x+.5),
+                        this.tileSize*(y+.6),
+                        String(obj.cooking_tick),
+                        {
+                            font: "25px Arial",
+                            fill: "red",
+                            align: "center",
+                        }
+                    );
+                    timesprite.depth = 2;
+                    objs_here['timesprite'] = timesprite;
+                }
+
+                sprites['objects'][objpos] = objs_here
+            }
+            else if (obj.name === 'pot') {
                 let ingredients = obj._ingredients.map(x => x['name']);
                 let soup_status = "done";
                 spriteframe = this._ingredientsToSpriteFrame(ingredients, soup_status);
@@ -335,7 +454,7 @@ class OvercookedScene extends Phaser.Scene {
                 objsprite.setOrigin(0);
                 sprites['objects'][objpos] = {objsprite};
             }
-        }        
+        }*/        
     }
 
     _drawHUD(hud_data, sprites, board_height) {
@@ -406,10 +525,11 @@ class OvercookedScene extends Phaser.Scene {
                     element.destroy();
                 });
                 sprites['all_orders']['orders'] = [];
-
+                // console.log("orders: ", orders);
                 // Update with new orders
                 for (let i = 0; i < orders.length; i++) {
                     let spriteFrame = this._ingredientsToSpriteFrame(orders[i]['ingredients'], "done");
+                    // console.log("sprite: ", spriteFrame)
                     let orderSprite = this.add.sprite(
                         90 + 40 * i,
                         board_height - 4,
@@ -492,6 +612,12 @@ class OvercookedScene extends Phaser.Scene {
         let num_tomatoes = ingredients.filter(x => x === 'tomato').length;
         let num_onions = ingredients.filter(x => x === 'onion').length;
         return `soup_${status}_tomato_${num_tomatoes}_onion_${num_onions}.png`
+    }
+
+
+    _ingredientsToPNG(container, ingredient_names) {
+        return `${container}_${ingredient_names}.png`
+
     }
 }
 
