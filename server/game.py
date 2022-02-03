@@ -422,7 +422,9 @@ class OvercookedGame(Game):
             self.add_player(player_one_id, idx=1, buff_size=1, is_human=False)
             self.npc_policies[player_one_id] = self.get_policy(playerOne, idx=1)
             self.npc_state_queues[player_one_id] = LifoQueue()
-        
+
+        self.env = None
+        self.print_state = True
 
     def _curr_game_over(self):
         return time() - self.start_time >= self.max_time
@@ -495,6 +497,12 @@ class OvercookedGame(Game):
         # Apply overcooked game logic to get state transition
         prev_state = self.state
         self.state, info = self.mdp.get_state_transition(prev_state, joint_action)
+
+        if self.print_state:
+            if any(ac != Action.STAY for ac in joint_action):
+                ordered_features = self.env.featurize_state_mdp(self.state)
+                # ordered_features = self.env.lossless_state_encoding_mdp(self.state)
+
         if self.show_potential:
             self.phi = self.mdp.potential_function(prev_state, self.mp, gamma=0.99)
 
@@ -535,6 +543,8 @@ class OvercookedGame(Game):
 
         self.curr_layout = self.layouts.pop()
         self.mdp = OvercookedGridworld.from_layout_name(self.curr_layout, **self.mdp_params)
+        if self.print_state:
+            self.env = OvercookedEnv.from_mdp(self.mdp)
         if self.show_potential:
             self.mp = MotionPlanner.from_pickle_or_compute(self.mdp, counter_goals=NO_COUNTERS_PARAMS)
         self.state = self.mdp.get_standard_start_state()
