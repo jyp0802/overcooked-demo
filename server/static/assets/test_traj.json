@@ -1800,7 +1800,7 @@
         "any"
       ],
       "num_items_for_soup": 3,
-      "rew_shaping_params": null
+      "shaped_reward_params": null
     }
   ],
   "env_params": [
