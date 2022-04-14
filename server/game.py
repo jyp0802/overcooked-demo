@@ -6,7 +6,8 @@ from overcooked_ai_py.mdp.overcooked_mdp import OvercookedGridworld
 from overcooked_ai_py.mdp.overcooked_env import OvercookedEnv
 from overcooked_ai_py.mdp.actions import Action, Direction
 from overcooked_ai_py.planning.planners import MotionPlanner, NO_COUNTERS_PARAMS
-from human_aware_rl.rllib.rllib import load_agent
+from human_aware_rl.rllib.rllib import load_agent as ppo_load_agent
+from human_aware_rl.rllib.pbt_rllib import load_agent as pbt_load_agent
 import random, os, pickle, json
 import ray
 
@@ -482,6 +483,22 @@ class OvercookedGame(Game):
     def apply_action(self, player_id, action):
         pass
 
+    MACRO_IDX = 0
+    TYPE = "none"
+    if TYPE == "load":
+        f = open("../MACRO.txt", "r")
+        TEMP_MACRO = f.readlines()
+        f.close()
+        MACRO = []
+        for item in TEMP_MACRO:
+            item = item.strip()
+            if item[0] == "(":
+                MACRO.append(tuple(map(int, item[1:-1].split(", "))))
+            else:
+                MACRO.append(item)
+    if TYPE == "save":
+        f = open("../MACRO.txt", "w")
+
     def apply_actions(self):
         # Default joint action, as NPC policies and clients probably don't enqueue actions fast 
         # enough to produce one at every tick
@@ -496,6 +513,15 @@ class OvercookedGame(Game):
         
         # Apply overcooked game logic to get state transition
         prev_state = self.state
+
+        if self.TYPE == "load":
+            while self.MACRO_IDX < len(self.MACRO):
+                prev_state, _ = self.mdp.get_state_transition(prev_state, (self.MACRO[self.MACRO_IDX], (0, 0)))
+                self.MACRO_IDX += 1
+
+        if self.TYPE == "save":
+            self.f.write(f"{joint_action[0]}\n")
+
         self.state, info = self.mdp.get_state_transition(prev_state, joint_action)
 
         if self.print_state:
@@ -594,7 +620,10 @@ class OvercookedGame(Game):
             try:
                 # Loading rllib agents requires additional helpers
                 fpath = os.path.join(AGENT_DIR, npc_id, 'agent', 'agent')
-                agent =  load_agent(fpath, agent_index=idx)
+                if "pbt" in npc_id.lower():
+                    agent =  pbt_load_agent(fpath, policy_id="ppo_0", agent_index=idx)
+                else:
+                    agent =  ppo_load_agent(fpath, policy_id="ppo", agent_index=idx)
                 return agent
             except Exception as e:
                 raise IOError("Error loading Rllib Agent\n{}".format(e.__repr__()))
