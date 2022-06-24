@@ -8,6 +8,7 @@ from overcooked_ai_py.mdp.actions import Action, Direction
 from overcooked_ai_py.planning.planners import MotionPlanner, NO_COUNTERS_PARAMS
 from human_aware_rl.rllib.rllib import load_agent as ppo_load_agent
 from human_aware_rl.rllib.pbt_rllib import load_agent as pbt_load_agent
+from human_aware_rl.rllib.fcp_rllib import load_agent as fcp_load_agent
 import random, os, pickle, json
 import ray
 
@@ -621,7 +622,12 @@ class OvercookedGame(Game):
                 # Loading rllib agents requires additional helpers
                 fpath = os.path.join(AGENT_DIR, npc_id, 'agent', 'agent')
                 if "pbt" in npc_id.lower():
-                    agent =  pbt_load_agent(fpath, policy_id="ppo_0", agent_index=idx)
+                    if "comb" in npc_id.lower():
+                        agent =  pbt_load_agent(fpath, policy_id="ppo_1", agent_index=idx)
+                    elif "next" in npc_id.lower():
+                        agent =  pbt_load_agent(fpath, policy_id="ppo_0", agent_index=idx)
+                elif "fcp" in npc_id.lower():
+                    agent =  fcp_load_agent(fpath, policy_id="fcp", agent_index=idx)
                 else:
                     agent =  ppo_load_agent(fpath, policy_id="ppo", agent_index=idx)
                 return agent
